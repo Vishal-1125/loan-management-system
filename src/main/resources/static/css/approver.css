@@ -1,0 +1,88 @@
+/* ---------------- General ---------------- */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+h1,
+h3 {
+  text-align: center;
+}
+
+/* ---------------- Tabs ---------------- */
+.tabs {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.tab {
+  padding: 8px 16px;
+  margin: 0 5px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.tab:hover {
+  background-color: #ddd;
+}
+
+.tab.active {
+  background-color: #4285f4;
+  color: #fff;
+  border-color: #4285f4;
+}
+
+/* ---------------- Table ---------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th,
+td {
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f1f1f1;
+}
+
+tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+button {
+  padding: 4px 8px;
+  margin: 2px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #e0e0e0;
+}
+
+/* ---------------- Modal ---------------- */
+#workflow-modal {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 15px;
+  width: 400px;
+  margin: 20px auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+#workflow-steps-container div {
+  margin-bottom: 10px;
+}

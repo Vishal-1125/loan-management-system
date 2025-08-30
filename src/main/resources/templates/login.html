@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login - LMS</title>
+    <link rel="stylesheet" href="/css/login.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <h2>Login</h2>
+      <form method="post" action="/login">
+        <input type="text" name="username" placeholder="Username" required />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
+      <!-- <div class="error">
+       <span th:if="${param.error}">Invalid username or password</span>
+            <span th:if="${param.logout}">You have been logged out</span> -->
+      <!-- </div>  -->
+    </div>
+  </body>
+</html>

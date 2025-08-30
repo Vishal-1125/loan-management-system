@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>RO Dashboard</title>
+    <link rel="stylesheet" href="/css/ro.css" />
+  </head>
+  <body>
+    <h1>RO Dashboard</h1>
+
+    <div class="tabs">
+      <span class="tab active" id="punch-tab" onclick="showTab('punch')"
+        >Punch Application</span
+      >
+      <span class="tab" id="myapps-tab" onclick="showTab('myapps')"
+        >My Applications</span
+      >
+    </div>
+
+    <div id="punch" class="tab-content">
+      <h3>Punch Loan Application</h3>
+      <form id="punch-form">
+        <label>Name:</label><br />
+        <input type="text" id="name" required /><br /><br />
+
+        <label>Loan Amount:</label><br />
+        <input type="number" id="loanAmount" required /><br /><br />
+
+        <label>Tenure (Months):</label><br />
+        <input type="number" id="tenure" required /><br /><br />
+
+        <label>Income:</label><br />
+        <input type="number" id="income" required /><br /><br />
+
+        <label>Contact:</label><br />
+        <input type="number" maxlength="10"  minlength="10" id="contact" required /><br /><br />
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+
+    <div id="myapps" class="tab-content" style="display: none">
+      <h3>My Punched Applications</h3>
+      <table>
+        <thead>
+          <tr>
+			<th>Applicant ID</th>
+            <th>Name</th>
+            <th>Loan Amount</th>
+            <th>Tenure (in Months)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="myapps-table-body">
+        
+        </tbody>
+      </table>
+    </div>
+
+    <script src="/js/ro.js"></script>
+  </body>
+</html>

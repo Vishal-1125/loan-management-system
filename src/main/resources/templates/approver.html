@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Approver Dashboard</title>
+    <link rel="stylesheet" href="/css/approver.css" />
+  </head>
+  <body>
+    <h1>Approver Dashboard</h1>
+
+
+    <div class="tabs">
+      <button
+        id="unclaimed-tab"
+        class="tab active"
+        onclick="showTab('unclaimed')"
+      >
+        Unclaimed
+      </button>
+      <button id="claimed-tab" class="tab" onclick="showTab('claimed')">
+        Claimed
+      </button>
+      <button id="approved-tab" class="tab" onclick="showTab('approved')">
+        Approved
+      </button>
+      <button id="rejected-tab" class="tab" onclick="showTab('rejected')">
+        Rejected
+      </button>
+    </div>
+
+    <table border="1">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="applications-table-body"></tbody>
+    </table>
+
+    <div
+      id="workflow-modal"
+      style="
+        display: none;
+        border: 1px solid #000;
+        padding: 10px;
+        margin-top: 20px;
+      "
+    >
+      <h3>Workflow Steps</h3>
+      <div id="workflow-steps-container"></div>
+      <button onclick="closeWorkflowModal()">Close</button>
+    </div>
+
+    <script src="/js/approver.js"></script>
+  </body>
+</html>
