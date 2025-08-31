@@ -26,11 +26,18 @@ async function loadApplications(bucket) {
       body: JSON.stringify({ applicationBucket: bucket }),
     });
 
-    if (!res.ok) throw new Error(`Failed to fetch ${bucket} applications`);
+    const responseData = await res.json();
 
-    renderApplications(await res.json(), bucket.toLowerCase());
+    if (responseData.status !== "0") {
+      alert(responseData.message || `Failed to fetch ${bucket} applications`);
+      console.error(responseData);
+      return;
+    }
+
+    renderApplications(responseData.data, bucket.toLowerCase());
   } catch (err) {
     console.error(err);
+    alert("Network error. Please try again.");
   }
 }
 
@@ -67,15 +74,24 @@ function renderApplications(apps, tab) {
 
 async function claimApplication(applicantId) {
   try {
-    await fetch("/approver/applications/claim", {
+    const res = await fetch("/approver/applications/claim", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ applicantId }),
     });
+
+    const responseData = await res.json();
+
+    if (responseData.status !== "0") {
+      alert(responseData.message || "Error claiming application");
+      console.error(responseData);
+      return;
+    }
+
     loadUnclaimedApplications();
-    //loadClaimedApplications();
   } catch (err) {
     console.error(err);
+    alert("Network error. Please try again.");
   }
 }
 
@@ -87,14 +103,21 @@ async function reviewWorkflow(applicantId) {
       body: JSON.stringify({ applicationId: applicantId }),
     });
 
-    if (!res.ok) throw new Error("Failed to fetch workflow");
-    const steps = await res.json();
+    const responseData = await res.json();
+
+    if (responseData.status !== "0") {
+      alert(responseData.message || "Failed to fetch workflow");
+      console.error(responseData);
+      return;
+    }
+
+    const steps = responseData.data;
     showWorkflowModal(steps, applicantId);
   } catch (err) {
     console.error(err);
+    alert("Network error. Please try again.");
   }
 }
-
 
 function showWorkflowModal(steps, applicantId) {
   const container = document.getElementById("workflow-steps-container");
@@ -103,8 +126,6 @@ function showWorkflowModal(steps, applicantId) {
   const currentStep = steps.find((step) => step.current);
   console.log(currentStep);
 
-
-console.log(currentStep);
   if (!currentStep) {
     container.innerHTML = "<strong>All steps completed!</strong>";
     return;
@@ -134,7 +155,16 @@ async function approveStep(applicantId, stepName) {
         comments: document.getElementById(`comment-${stepName}`).value,
       }),
     });
-    const workflow = await res.json();
+
+    const responseData = await res.json();
+
+    if (responseData.status !== "0") {
+      alert(responseData.message || "Error approving step");
+      console.error(responseData);
+      return;
+    }
+
+    const workflow = responseData.data;
 
     if (workflow.applicant.status === "Approved") {
       closeWorkflowModal();
@@ -143,9 +173,9 @@ async function approveStep(applicantId, stepName) {
     }
 
     loadClaimedApplications();
-   // loadApprovedApplications();
   } catch (err) {
     console.error(err);
+    alert("Network error. Please try again.");
   }
 }
 
@@ -159,20 +189,27 @@ async function rejectStep(applicantId, stepName) {
         comments: document.getElementById(`comment-${stepName}`).value,
       }),
     });
-    await res.json();
+
+    const responseData = await res.json();
+
+    if (responseData.status !== "0") {
+      alert(responseData.message || "Error rejecting step");
+      console.error(responseData);
+      return;
+    }
+
     closeWorkflowModal();
     loadClaimedApplications();
-    //loadRejectedApplications();
   } catch (err) {
     console.error(err);
+    alert("Network error. Please try again.");
   }
 }
 
 function closeWorkflowModal() {
   document.getElementById("workflow-modal").style.display = "none";
-  
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  showTab("unclaimed"); q
+  showTab("unclaimed");
 });

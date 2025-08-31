@@ -17,6 +17,9 @@ import com.twinline.loan_management_system.entity.Applicant;
 import com.twinline.loan_management_system.entity.User;
 import com.twinline.loan_management_system.entity.Workflow;
 import com.twinline.loan_management_system.entity.WorkflowMaster;
+import com.twinline.loan_management_system.exception.ApplicantAlreadyClaimedException;
+import com.twinline.loan_management_system.exception.ForbiddenActionException;
+import com.twinline.loan_management_system.exception.ResourceNotFoundException;
 import com.twinline.loan_management_system.repo.ApplicantRepository;
 import com.twinline.loan_management_system.repo.UserRepository;
 import com.twinline.loan_management_system.repo.WorkflowMasterRepository;
@@ -41,32 +44,25 @@ public class ApplicantServiceImpl implements ApplicantService {
 	}
 
 	@Override
-	public Applicant createApplicant(ApplicantReqDto applicantReqDto) {
+	public ApplicantResDto createApplicant(ApplicantReqDto applicantReqDto) {
 		Applicant applicant = new Applicant();
+		ApplicantResDto applicantResDto = new ApplicantResDto();
 		BeanUtils.copyProperties(applicantReqDto, applicant);
 
 		User ro = userRepository.findById(applicantReqDto.getRoId())
-				.orElseThrow(() -> new RuntimeException("User not found"));
+				.orElseThrow(() -> new ForbiddenActionException("User not found"));
 
 		applicant.setStatus("Pending");
 		applicant.setRo(ro);
 		applicant.setCreatedAt(LocalDateTime.now());
 		applicant.setUpdatedAt(LocalDateTime.now());
 		Applicant saved = applicantRepository.save(applicant);
-
-//		List<WorkflowMaster> steps = workflowMasterRepository.findAllByOrderByStepOrderAsc();
-//		List<Workflow> workflows = steps.stream()
-//				.map(step -> Workflow.builder().applicant(saved).workflowStep(step)
-//						.status(step.getStepOrder() == 1 ? "Pending" : "Not Started").createdAt(LocalDateTime.now())
-//						.build())
-//				.collect(Collectors.toList());
-//
-//		workflowRepository.saveAll(workflows);
 		
 	    WorkflowMaster step = workflowMasterRepository.findByStepOrder(1);
 	    Workflow workflow= Workflow.builder().applicant(saved).workflowStep(step).status("Pending").createdAt(LocalDateTime.now()).build();
 	    workflowRepository.save(workflow);
-		return saved;
+	    BeanUtils.copyProperties(saved, applicantResDto);
+		return applicantResDto;
 
 	}
 
@@ -96,20 +92,27 @@ public class ApplicantServiceImpl implements ApplicantService {
 //    }
 
 	@Override
-	public Applicant claimApplicant(ClaimApplicationReqDto claimApplicationReqDto) {
+	public ApplicantResDto claimApplicant(ClaimApplicationReqDto claimApplicationReqDto) {
+		
+		ApplicantResDto applicantResDto  = new ApplicantResDto();
+		
 		Applicant applicant = applicantRepository.findById(claimApplicationReqDto.getApplicantId())
-				.orElseThrow(() -> new RuntimeException("Applicant not found"));
+				.orElseThrow(() -> new ResourceNotFoundException("Applicant not found"));
 
 		if (applicant.getClaimedBy() != null) {
-			throw new RuntimeException("Applicant already claimed by another approver");
+			throw new ApplicantAlreadyClaimedException("Applicant already claimed by another approver");
 		}
 
 		User approver = userRepository.findById(claimApplicationReqDto.getApproverId())
-				.orElseThrow(() -> new RuntimeException("Approver not found"));
+				.orElseThrow(() -> new ForbiddenActionException("Approver not found"));
 
 		applicant.setClaimedBy(approver);
 		applicant.setUpdatedAt(LocalDateTime.now());
-		return applicantRepository.save(applicant);
+		
+		
+		BeanUtils.copyProperties(applicantRepository.save(applicant),applicantResDto);
+		
+		return applicantResDto;
 	}
 
 	@Override

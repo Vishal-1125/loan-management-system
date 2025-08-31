@@ -12,6 +12,9 @@ import com.twinline.loan_management_system.entity.Applicant;
 import com.twinline.loan_management_system.entity.User;
 import com.twinline.loan_management_system.entity.Workflow;
 import com.twinline.loan_management_system.entity.WorkflowMaster;
+import com.twinline.loan_management_system.exception.ApplicantAlreadyClaimedException;
+import com.twinline.loan_management_system.exception.ForbiddenActionException;
+import com.twinline.loan_management_system.exception.ResourceNotFoundException;
 import com.twinline.loan_management_system.repo.ApplicantRepository;
 import com.twinline.loan_management_system.repo.WorkflowMasterRepository;
 import com.twinline.loan_management_system.repo.WorkflowRepository;
@@ -36,14 +39,14 @@ public class WorkflowServiceImpl implements WorkflowService {
 	@Override
     public Workflow approveStep(StepUpdateReqDto stepUpdateReqDto) {
 		Applicant applicant = applicantRepository.findById(stepUpdateReqDto.getApplicantId())
-                .orElseThrow(() -> new RuntimeException("Applicant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Applicant not found"));
 
         if (applicant.getClaimedBy() == null || !applicant.getClaimedBy().getUserId().equals(stepUpdateReqDto.getApproverId())) {
-            throw new RuntimeException("You are not authorized to act on this applicant");
+            throw new ApplicantAlreadyClaimedException("You are not authorized to act on this applicant");
         }
 
         Workflow workflow = workflowRepository.findByApplicantApplicantIdAndStatus(stepUpdateReqDto.getApplicantId(), "Pending")
-                .orElseThrow(() -> new RuntimeException("No pending workflow step found"));
+                .orElseThrow(() -> new ResourceNotFoundException("No pending workflow step found"));
 
         workflow.setApprover(User.builder().userId(stepUpdateReqDto.getApproverId()).build());
         workflow.setComments(stepUpdateReqDto.getComments());
@@ -72,14 +75,14 @@ public class WorkflowServiceImpl implements WorkflowService {
     @Override
     public Workflow rejectStep(StepUpdateReqDto stepUpdateReqDto) {
     	 Applicant applicant = applicantRepository.findById(stepUpdateReqDto.getApplicantId())
-                 .orElseThrow(() -> new RuntimeException("Applicant not found"));
+                 .orElseThrow(() -> new ResourceNotFoundException("Applicant not found"));
 
          if (applicant.getClaimedBy() == null || !applicant.getClaimedBy().getUserId().equals(stepUpdateReqDto.getApproverId())) {
-             throw new RuntimeException("You are not authorized to act on this applicant");
+             throw new ApplicantAlreadyClaimedException("You are not authorized to act on this applicant");
          }
 
          Workflow workflow = workflowRepository.findByApplicantApplicantIdAndStatus(stepUpdateReqDto.getApplicantId(), "Pending")
-                 .orElseThrow(() -> new RuntimeException("No pending workflow step found"));
+                 .orElseThrow(() -> new ResourceNotFoundException("No pending workflow step found"));
 
          workflow.setApprover(User.builder().userId(stepUpdateReqDto.getApproverId()).build());
          workflow.setComments(stepUpdateReqDto.getComments());
@@ -98,7 +101,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     public List<WorkflowStepDTO> getWorkflowsByApplicant(ApplicationWorkflowReqDto applicationWorkflowReqDto) {
     
     	Applicant applicant = applicantRepository.findById(applicationWorkflowReqDto.getApplicationId())
-                .orElseThrow(() -> new RuntimeException("Applicant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Applicant not found"));
     	List<Workflow> steps=workflowRepository.findByApplicantApplicantIdOrderByWorkflowStepStepOrderAsc(applicant.getApplicantId());
 
     	List<WorkflowStepDTO> workflowStepsDto = new ArrayList<>();

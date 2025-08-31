@@ -11,9 +11,9 @@ import com.twinline.loan_management_system.dto.response.ApplicantResDto;
 import com.twinline.loan_management_system.entity.Applicant;
 
 public interface ApplicantService {
-    Applicant createApplicant(ApplicantReqDto applicantReqDto);
+    ApplicantResDto createApplicant(ApplicantReqDto applicantReqDto);
     List<ApplicantResDto> getApplicantsByRO(Long roId);
     List<Applicant> getApplications(@RequestBody ApplicationReqDto applicationReqDtos);
-    public Applicant claimApplicant(ClaimApplicationReqDto claimApplicationReqDto);
+    public ApplicantResDto claimApplicant(ClaimApplicationReqDto claimApplicationReqDto);
 }
 
