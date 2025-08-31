@@ -73,7 +73,7 @@ button:hover {
 }
 
 /* ---------------- Modal ---------------- */
-#workflow-modal {
+#workflow-modal,#preview-modal {
   background-color: #fff;
   border: 1px solid #ccc;
   padding: 15px;
@@ -83,6 +83,6 @@ button:hover {
   border-radius: 6px;
 }
 
-#workflow-steps-container div {
+#workflow-steps-container div,#preview-container div {
   margin-bottom: 10px;
 }

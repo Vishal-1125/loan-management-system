@@ -7,4 +7,5 @@ public class ApplicationReqDto {
 
 	private String applicationBucket;
 	private Long approverId;
+	private Long applicantId;
 }

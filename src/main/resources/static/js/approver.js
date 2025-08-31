@@ -41,6 +41,30 @@ async function loadApplications(bucket) {
   }
 }
 
+async function previewApplication(applicationId) {
+  try {
+    const res = await fetch("/approver/applications/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ applicantId: applicationId }),
+    });
+
+    const responseData = await res.json();
+
+    if (responseData.status !== "0") {
+      alert(responseData.message || `Failed to fetch`);
+      console.error(responseData);
+      return;
+    }
+
+	showPreviewModal(responseData.data[0]);
+
+  } catch (err) {
+    console.error(err);
+    alert("Network error. Please try again.");
+  }
+}
+
 function loadUnclaimedApplications() { return loadApplications("Unclaimed"); }
 function loadClaimedApplications() { return loadApplications("Claimed"); }
 function loadApprovedApplications() { return loadApplications("Approved"); }
@@ -66,6 +90,7 @@ function renderApplications(apps, tab) {
             ? `<button onclick="reviewWorkflow(${app.applicantId})">Review</button>`
             : ""
         }
+        <button onclick="previewApplication(${app.applicantId})">Preview</button>
       </td>
     `;
     tbody.appendChild(row);
@@ -145,6 +170,28 @@ function showWorkflowModal(steps, applicantId) {
   document.getElementById("workflow-modal").style.display = "block";
 }
 
+function showPreviewModal(applicant) {
+  const container = document.getElementById("preview-container");
+  container.innerHTML = "";
+
+  const div = document.createElement("div");
+  div.innerHTML = `
+    <h3>Applicant Details</h3>
+    <p><strong>ID:</strong> ${applicant.applicantId || "-"}</p>
+    <p><strong>Name:</strong> ${applicant.name || "-"}</p>
+    <p><strong>Loan Amount:</strong> ${applicant.loanAmount || "-"}</p>
+    <p><strong>Tenure (Months):</strong> ${applicant.tenureMonths || "-"}</p>
+    <p><strong>Income:</strong> ${applicant.income || "-"}</p>
+    <p><strong>Contact Details:</strong> ${applicant.contactDetails || "-"}</p>
+    <p><strong>Status:</strong> ${applicant.status || "-"}</p>
+  `;
+
+  container.appendChild(div);
+
+  document.getElementById("preview-modal").style.display = "block";
+}
+
+
 async function approveStep(applicantId, stepName) {
   try {
     const res = await fetch("/approver/applications/approve", {
@@ -208,6 +255,10 @@ async function rejectStep(applicantId, stepName) {
 
 function closeWorkflowModal() {
   document.getElementById("workflow-modal").style.display = "none";
+}
+
+function closePreviewModal() {
+  document.getElementById("preview-modal").style.display = "none";
 }
 
 document.addEventListener("DOMContentLoaded", () => {

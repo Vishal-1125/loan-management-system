@@ -26,7 +26,10 @@ import com.twinline.loan_management_system.repo.WorkflowMasterRepository;
 import com.twinline.loan_management_system.repo.WorkflowRepository;
 import com.twinline.loan_management_system.service.ApplicantService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ApplicantServiceImpl implements ApplicantService {
 
 	private final ApplicantRepository applicantRepository;
@@ -117,6 +120,11 @@ public class ApplicantServiceImpl implements ApplicantService {
 
 	@Override
 	public List<Applicant> getApplications(ApplicationReqDto dto) {
+		
+		log.info(""+dto);
+		if(dto.getApplicantId()!=null) {
+			return Arrays.asList(applicantRepository.findById(dto.getApplicantId()).orElseThrow(()-> new ResourceNotFoundException("No Applicant Found with this Id "+dto.getApplicantId())));
+		}
 		switch (dto.getApplicationBucket()) {
 		case "Unclaimed":
 			return applicantRepository.getApplications( Arrays.asList("Pending"), null);
